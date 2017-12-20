@@ -12,6 +12,12 @@ namespace Attila2CK2 {
         private int id;
         private string name;
 
+        public CK2Dynasty() {
+            this.name = "Holder";
+            this.id = CK2Dynasty.newIDnum;
+            CK2Dynasty.newIDnum++;
+        }
+
         public CK2Dynasty(string name) {
             this.name = name;
             this.id = CK2Dynasty.newIDnum;

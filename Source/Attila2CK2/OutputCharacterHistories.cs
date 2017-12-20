@@ -8,11 +8,14 @@ using System.IO;
 namespace Attila2CK2 {
     class OutputCharacterHistories {
 
-        public static void output(FactionsInfo factions) {
-            List<CK2Character> owners = factions.getOwners();
+        public static void output(FactionsInfo factionsObj) {
+            List<CK2Character> owners = factionsObj.getOwners();
+            List<FactionInfo> factions = factionsObj.getFactions();
             string filename = ImportantPaths.getOutputPath() + "\\history\\characters\\english.txt";
             using (StreamWriter writer = File.CreateText(filename)) {
-                foreach (CK2Character owner in owners) {
+                foreach (FactionInfo faction in factions) {
+                    if (!faction.getExists()) continue;
+                    CK2Character owner = faction.getOwner();
                     CK2Dynasty dynasty = owner.getDynasty();
                     writeCharacter(writer, dynasty, owner);
                 }

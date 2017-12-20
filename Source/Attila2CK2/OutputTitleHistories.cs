@@ -38,6 +38,12 @@ namespace Attila2CK2 {
                         writer.WriteLine("\tlaw=imperial_administration");
                         writer.WriteLine("\tlaw=succ_primogeniture");
                     }
+                    if (!faction.getIsNewTitle()) {
+                        string idName = ("correction_" + faction.getCK2Title()).ToUpper();
+                        string idAdj = ("correction_" + faction.getCK2Title() + "_adj").ToUpper();
+                        writer.WriteLine("name=" + idName);
+                        writer.WriteLine("adjective=" + idAdj);
+                    }
                     writer.WriteLine("}");
                 }
             }

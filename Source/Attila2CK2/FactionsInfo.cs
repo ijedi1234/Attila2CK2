@@ -111,19 +111,23 @@ namespace Attila2CK2 {
             }
         }
 
-        public void deriveFactionTree() {
-            string dynastyStr = "Holder";
-            string ownerStr = "Place";
+        public void readFamilyTrees(FamilyTrees trees) {
             foreach (FactionInfo faction in factionPreProcessMappings) {
-                CK2Dynasty dynasty = null;
+                CK2Character character = new CK2Character();
+                FamilyTree tree = trees.getTree(faction.getID());
+                if(tree != null)
+                    character = tree.getOwner();
+                CK2Dynasty dynasty = new CK2Dynasty();
                 if (faction.getDynasty() != null) {
                     dynasty = faction.getDynasty();
+                    tree.replaceDynasty(dynasty);
                 }
                 else {
-                    dynasty = new CK2Dynasty(dynastyStr);
+                    if (tree != null)
+                        dynasty = tree.getDynasty();
                     faction.setDynasty(dynasty);
                 }
-                CK2Character character = new CK2Character(ownerStr, dynasty);
+                //character.setDynasty(dynasty);
                 faction.setOwner(character);
             }
         }
