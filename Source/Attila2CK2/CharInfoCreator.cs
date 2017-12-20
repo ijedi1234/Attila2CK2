@@ -11,8 +11,10 @@ namespace Attila2CK2 {
 
         private Dictionary<String, String> nameIDMap;
         List<Tuple<String, CK2Character>> charInfo;
+        Dictionary<int, string> esfID2Job;
 
         public CharInfoCreator(ImportantPaths importantPaths) {
+            esfID2Job = new Dictionary<int, string>();
             List<Tuple<String, String>> charXMLLocs = getCharXMLLocs(importantPaths);
             nameIDMap = generateNameIDMap();
             charInfo = generateCharInfo(importantPaths, charXMLLocs);
@@ -50,6 +52,11 @@ namespace Attila2CK2 {
                             charXMLs.Add(tuple);
                         }
                     }
+                    if (attr.Name == "path" && attr.InnerText.StartsWith("government")) {
+                        string governmentLoc = attr.InnerText;
+                        governmentLoc = governmentLoc.Replace("/", "\\");
+                        readGovernmentInfo(importantPaths, governmentLoc);
+                    }
                 }
             }
             return charXMLs;
@@ -73,7 +80,6 @@ namespace Attila2CK2 {
             string savegamePath = importantPaths.getSavegameXMLPath();
             foreach (Tuple<String, String> charXMLLoc in charXMLLocs) {
                 string name = "";
-
                 XmlDocument doc = new XmlDocument();
                 try {
                     doc.Load(savegamePath + "\\" + charXMLLoc.Item2);
@@ -82,13 +88,21 @@ namespace Attila2CK2 {
                     continue;
                 }
                 XmlNode root = doc.DocumentElement.FirstChild;
-                for (XmlNode node = root.FirstChild; node != null; node = node.NextSibling) { 
+                int esfID = 0;
+                int treeID = 0;
+                int nodeCount = 0;
+                for (XmlNode node = root.FirstChild; node != null; node = node.NextSibling) {
+                    if (nodeCount == 0 && node.Name != "rec") esfID = Int32.Parse(node.InnerText);
+                    if (node.Name != "rec") nodeCount++;
                     if (node.Attributes.Count == 0) {
                         continue;
                     }
                     XmlAttribute attr = node.Attributes[0];
                     if (attr.Name == "type" && attr.InnerText == "CHARACTER_DETAILS") {
+                        int detailCount = 0;
                         for (XmlNode detailNode = node.FirstChild; detailNode != null; detailNode = detailNode.NextSibling) {
+                            if (detailCount == 23 && detailNode.Name != "rec") treeID = Int32.Parse(detailNode.InnerText);
+                            if (detailNode.Name != "rec") detailCount++;
                             if (detailNode.Attributes.Count == 0) {
                                 continue;
                             }
@@ -99,7 +113,7 @@ namespace Attila2CK2 {
                         }
                     }
                 }
-                CK2Character character = new CK2Character(name);
+                CK2Character character = new CK2Character(name, esfID, treeID);
                 Tuple<String, CK2Character> tuple = Tuple.Create<String, CK2Character>(charXMLLoc.Item1, character);
                 charInfo.Add(tuple);
             }
@@ -114,7 +128,53 @@ namespace Attila2CK2 {
             return firstName;
         }
 
+        private void readGovernmentInfo(ImportantPaths paths, string loc) {
+            string govPath = paths.getSavegameXMLPath() + "\\" + loc;
+            XmlDocument doc = new XmlDocument();
+            try {
+                doc.Load(govPath);
+            }
+            catch (Exception) { return; }
+            XmlNode root = doc.DocumentElement;
+            for (XmlNode node = root.FirstChild; node != null; node = node.NextSibling) {
+                if (node.Attributes.Count == 0) {
+                    continue;
+                }
+                XmlAttribute attr = node.Attributes[0];
+                if (attr.Name == "type" && attr.InnerText == "CHARACTER_POSTS") {
+                    for (XmlNode charPostContainer = node.FirstChild; charPostContainer != null; charPostContainer = charPostContainer.NextSibling) {
+                        for (XmlNode charPost = charPostContainer.FirstChild; charPost != null; charPost = charPost.NextSibling) {
+                            if (charPost.Name != "rec") continue;
+                            int pos = 0;
+                            string office = "";
+                            int esfID = 0;
+                            for (XmlNode charPostPos = charPost.FirstChild; charPostPos != null; charPostPos = charPostPos.NextSibling) {
+                                if (pos == 1) {
+                                    office = charPostPos.InnerText;
+                                }
+                                else if (pos == 2) {
+                                    esfID = Int32.Parse(charPostPos.InnerText);
+                                }
+                                pos++;
+                            }
+                            if (esfID != 0) {
+                                esfID2Job.Add(esfID, office);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
         public List<Tuple<String, CK2Character>> getCharInfo() { return charInfo; }
+        public string getJob(int esfID) {
+            try {
+                return esfID2Job[esfID];
+            }
+            catch (Exception) {
+                return null;
+            }
+        }
 
     }
 }

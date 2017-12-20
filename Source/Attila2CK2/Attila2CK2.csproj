@@ -45,6 +45,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AttilaRegionInfo.cs" />
+    <Compile Include="CharInfoCreator.cs" />
     <Compile Include="CK2Character.cs" />
     <Compile Include="CK2CountyRegionInfo.cs" />
     <Compile Include="CK2Dynasty.cs" />
@@ -52,6 +53,8 @@
     <Compile Include="DirectoryHierarchyCreator.cs" />
     <Compile Include="FactionInfo.cs" />
     <Compile Include="FactionsInfo.cs" />
+    <Compile Include="FamilyTree.cs" />
+    <Compile Include="FamilyTrees.cs" />
     <Compile Include="Form1.cs">
       <SubType>Form</SubType>
     </Compile>

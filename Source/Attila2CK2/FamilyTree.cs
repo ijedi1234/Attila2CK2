@@ -11,9 +11,9 @@ namespace Attila2CK2 {
         private CK2Character root;
         private CK2Dynasty dynasty;
 
-        public FamilyTree(List<CK2Character> factionCharacters, List<CK2Character> allCharacters) {
+        public FamilyTree(CharInfoCreator charInfoCreator, List<CK2Character> factionCharacters, List<CK2Character> allCharacters) {
             this.localCharacters = factionCharacters;
-            this.root = factionCharacters[0];
+            deriveJobs(charInfoCreator, factionCharacters);
             dynasty = new CK2Dynasty("HolderTree");
             foreach (CK2Character character in factionCharacters) {
                 character.setDynasty(dynasty);
@@ -23,6 +23,18 @@ namespace Attila2CK2 {
         public void replaceDynasty(CK2Dynasty newDynasty) {
             foreach (CK2Character character in localCharacters) {
                 character.setDynasty(newDynasty);
+            }
+        }
+
+        private void deriveJobs(CharInfoCreator charInfoCreator, List<CK2Character> factionCharacters) {
+            foreach(CK2Character character in factionCharacters) {
+                string office = charInfoCreator.getJob(character.getESFID());
+                if (office != null) {
+                    character.setOffice(office);
+                    if (office == "faction_leader") {
+                        root = character;
+                    }
+                }
             }
         }
 

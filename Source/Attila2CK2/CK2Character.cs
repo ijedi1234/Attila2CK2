@@ -10,9 +10,14 @@ namespace Attila2CK2 {
         private static int newIDnum = 157600001;
 
         private int id;
+        private int esfID;
+        private int treeID;
+
         private string name;
         private CK2Dynasty dynasty;
-        private bool alive;
+        private string office;
+
+        private bool isRoot;
 
         private int birthMonth;
         private int birthDay;
@@ -30,8 +35,10 @@ namespace Attila2CK2 {
             this.birthYear = 740;
         }
 
-        public CK2Character(string name) {
+        public CK2Character(string name, int esfID, int treeID) {
             this.name = name;
+            this.esfID = esfID;
+            this.treeID = treeID;
             this.id = CK2Character.newIDnum;
             CK2Character.newIDnum++;
             this.birthMonth = 4;
@@ -39,13 +46,21 @@ namespace Attila2CK2 {
             this.birthYear = 740;
         }
 
+        public void setOffice(string office) { 
+            this.office = office;
+            if (office == "faction_leader")
+                this.isRoot = true;
+        }
+
         public int getID() { return id; }
+        public int getESFID() { return esfID; }
         public string getName() { return name; }
         public int getBirthMonth() { return birthMonth; }
         public int getBirthDay() { return birthDay; }
         public int getBirthYear() { return birthYear; }
         public void setDynasty(CK2Dynasty dynasty) { this.dynasty = dynasty; }
         public CK2Dynasty getDynasty() { return dynasty; }
+        public bool getIsRoot() { return isRoot; }
 
     }
 }

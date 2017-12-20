@@ -14,7 +14,7 @@ namespace Attila2CK2 {
             allCharacters = new List<CK2Character>();
             trees = new Dictionary<string, FamilyTree>();
             Dictionary<String, List<CK2Character>> charInfo = reformatCharInfo(charInfoCreator.getCharInfo());
-            createTrees(charInfo);
+            createTrees(charInfoCreator, charInfo);
         }
 
         private Dictionary<String, List<CK2Character>> reformatCharInfo(List<Tuple<String, CK2Character>> charInfoBefore) {
@@ -34,9 +34,9 @@ namespace Attila2CK2 {
             return charInfoAfter;
         }
 
-        private void createTrees(Dictionary<String, List<CK2Character>> charInfo) {
+        private void createTrees(CharInfoCreator charInfoCreator, Dictionary<String, List<CK2Character>> charInfo) {
             foreach (var pair in charInfo) {
-                FamilyTree tree = new FamilyTree(pair.Value, allCharacters);
+                FamilyTree tree = new FamilyTree(charInfoCreator, pair.Value, allCharacters);
                 trees.Add(pair.Key, tree);
             }
         }
