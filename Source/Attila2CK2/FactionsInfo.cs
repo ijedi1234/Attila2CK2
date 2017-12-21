@@ -120,7 +120,8 @@ namespace Attila2CK2 {
                 CK2Dynasty dynasty = new CK2Dynasty();
                 if (faction.getDynasty() != null) {
                     dynasty = faction.getDynasty();
-                    tree.replaceDynasty(dynasty);
+                    if (tree != null)
+                        tree.replaceDynasty(dynasty);
                 }
                 else {
                     if (tree != null)

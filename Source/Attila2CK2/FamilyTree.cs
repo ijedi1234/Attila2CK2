@@ -15,7 +15,8 @@ namespace Attila2CK2 {
             this.localCharacters = factionCharacters;
             deriveJobs(charInfoCreator);
             discoverTree(this.root, familyID2Characters, esfFamilyTreeStructure);
-            dynasty = new CK2Dynasty("HolderTree");
+            //dynasty = new CK2Dynasty("HolderTree");
+            dynasty = this.deriveDynasty();
             foreach (CK2Character character in factionCharacters) {
                 character.setDynasty(dynasty);
             }
@@ -37,6 +38,15 @@ namespace Attila2CK2 {
                     }
                 }
             }
+        }
+
+        private CK2Dynasty deriveDynasty() {
+            CK2Character curChar = root;
+            while (curChar.getFather() != null) {
+                curChar = curChar.getFather();
+            }
+            CK2Dynasty dynasty = new CK2Dynasty(curChar.getName());
+            return dynasty;
         }
 
         private void discoverTree(CK2Character character, Dictionary<int, CK2Character> familyID2Characters, List<List<string>> esfFamilyTreeStructure) {
