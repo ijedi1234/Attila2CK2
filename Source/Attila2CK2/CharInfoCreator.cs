@@ -91,6 +91,7 @@ namespace Attila2CK2 {
                 int esfID = 0;
                 int treeID = 0;
                 int nodeCount = 0;
+                bool male = false;
                 for (XmlNode node = root.FirstChild; node != null; node = node.NextSibling) {
                     if (nodeCount == 0 && node.Name != "rec") esfID = Int32.Parse(node.InnerText);
                     if (node.Name != "rec") nodeCount++;
@@ -100,9 +101,24 @@ namespace Attila2CK2 {
                     XmlAttribute attr = node.Attributes[0];
                     if (attr.Name == "type" && attr.InnerText == "CHARACTER_DETAILS") {
                         int detailCount = 0;
+                        bool i1AryFound = false;
+                        int countedUAfterPol = 0;
                         for (XmlNode detailNode = node.FirstChild; detailNode != null; detailNode = detailNode.NextSibling) {
-                            if (detailCount == 23 && detailNode.Name != "rec") treeID = Int32.Parse(detailNode.InnerText);
-                            if (detailNode.Name != "rec") detailCount++;
+                            if (detailCount == 11) {
+                                male = (detailNode.Name == "yes");
+                            }
+                            if (detailNode.Name == "i1_ary") {
+                                i1AryFound = true;
+                            }
+                            if (detailNode.Name == "u" && i1AryFound) {
+                                countedUAfterPol++;
+                                if (countedUAfterPol == 5) {
+                                    treeID = Int32.Parse(detailNode.InnerText);
+                                }
+                            }
+                            if (detailNode.Name != "rec") {
+                                detailCount++;
+                            }
                             if (detailNode.Attributes.Count == 0) {
                                 continue;
                             }
@@ -113,14 +129,14 @@ namespace Attila2CK2 {
                         }
                     }
                 }
-                CK2Character character = new CK2Character(name, esfID, treeID);
+                CK2Character character = new CK2Character(name, esfID, treeID, male);
                 Tuple<String, CK2Character> tuple = Tuple.Create<String, CK2Character>(charXMLLoc.Item1, character);
                 charInfo.Add(tuple);
             }
             return charInfo;
         }
 
-        private string extractName(XmlNode node) {
+        public string extractName(XmlNode node) {
             XmlNode namesBlock = node.FirstChild;
             XmlNode firstNameNode = namesBlock.FirstChild.FirstChild;
             string firstNameObfuscated = firstNameNode.InnerText;
