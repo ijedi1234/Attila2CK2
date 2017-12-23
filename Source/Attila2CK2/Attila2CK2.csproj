@@ -50,6 +50,7 @@
     <Compile Include="CK2CountyRegionInfo.cs" />
     <Compile Include="CK2Dynasty.cs" />
     <Compile Include="CK2RegionsInfo.cs" />
+    <Compile Include="DateConverter.cs" />
     <Compile Include="DirectoryHierarchyCreator.cs" />
     <Compile Include="FactionInfo.cs" />
     <Compile Include="FactionsInfo.cs" />

@@ -26,8 +26,9 @@ namespace Attila2CK2 {
             InitializeComponent();
             string savegameXMLPath = "D:\\Program Files (x86)\\TotalWarEditors\\esfxml\\output\\compressed_data";
             importantPaths = new ImportantPaths(savegameXMLPath);
-            CharInfoCreator charInfoCreator = new CharInfoCreator(importantPaths);
-            FamilyTrees famTrees = new FamilyTrees(importantPaths, charInfoCreator);
+            DateConverter dtConverter = new DateConverter(importantPaths);
+            CharInfoCreator charInfoCreator = new CharInfoCreator(importantPaths, dtConverter);
+            FamilyTrees famTrees = new FamilyTrees(importantPaths, charInfoCreator, dtConverter);
             factionsInfo.updateImportantPaths(importantPaths);
             factionsInfo.readFactionXMLs();
             attilaRegionsInfo = new AttilaRegionsInfo(importantPaths, regionMap, factionsInfo);

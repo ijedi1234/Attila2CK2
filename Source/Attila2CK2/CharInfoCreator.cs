@@ -13,11 +13,11 @@ namespace Attila2CK2 {
         List<Tuple<String, CK2Character>> charInfo;
         Dictionary<int, string> esfID2Job;
 
-        public CharInfoCreator(ImportantPaths importantPaths) {
+        public CharInfoCreator(ImportantPaths importantPaths, DateConverter dtConverter) {
             esfID2Job = new Dictionary<int, string>();
             List<Tuple<String, String>> charXMLLocs = getCharXMLLocs(importantPaths);
             nameIDMap = generateNameIDMap();
-            charInfo = generateCharInfo(importantPaths, charXMLLocs);
+            charInfo = generateCharInfo(importantPaths, charXMLLocs, dtConverter);
         }
 
         private List<Tuple<String, String>> getCharXMLLocs(ImportantPaths importantPaths) {
@@ -75,7 +75,7 @@ namespace Attila2CK2 {
             return nameIDMap;
         }
 
-        private List<Tuple<String, CK2Character>> generateCharInfo(ImportantPaths importantPaths, List<Tuple<String, String>> charXMLLocs) {
+        private List<Tuple<String, CK2Character>> generateCharInfo(ImportantPaths importantPaths, List<Tuple<String, String>> charXMLLocs, DateConverter dtConverter) {
             List<Tuple<String, CK2Character>> charInfo = new List<Tuple<String, CK2Character>>();
             string savegamePath = importantPaths.getSavegameXMLPath();
             foreach (Tuple<String, String> charXMLLoc in charXMLLocs) {
@@ -92,6 +92,7 @@ namespace Attila2CK2 {
                 int treeID = 0;
                 int nodeCount = 0;
                 bool male = false;
+                string birthStr = "";
                 for (XmlNode node = root.FirstChild; node != null; node = node.NextSibling) {
                     if (nodeCount == 0 && node.Name != "rec") esfID = Int32.Parse(node.InnerText);
                     if (node.Name != "rec") nodeCount++;
@@ -103,10 +104,20 @@ namespace Attila2CK2 {
                         int detailCount = 0;
                         bool i1AryFound = false;
                         int countedUAfterPol = 0;
+                        bool foundGender = false;
+                        int ascCount = 0;
                         for (XmlNode detailNode = node.FirstChild; detailNode != null; detailNode = detailNode.NextSibling) {
+                            if (detailNode.Name == "asc") ascCount++;
+                            if (birthStr == "" && detailNode.Name == "date2") {
+                                birthStr = detailNode.InnerText;
+                            }
+                            if (foundGender == false && ascCount == 2 && (detailNode.Name == "yes" || detailNode.Name == "no")) {
+                                male = (detailNode.Name == "yes");
+                                foundGender = true;
+                            }/*
                             if (detailCount == 11) {
                                 male = (detailNode.Name == "yes");
-                            }
+                            }*/
                             if (detailNode.Name == "i1_ary") {
                                 i1AryFound = true;
                             }
@@ -129,7 +140,9 @@ namespace Attila2CK2 {
                         }
                     }
                 }
-                CK2Character character = new CK2Character(name, esfID, treeID, male);
+                DateTime birth = dtConverter.convertDate(birthStr);
+                DateTime death = dtConverter.convertDate("1 0 0 0");
+                CK2Character character = new CK2Character(name, esfID, treeID, male, birth, death);
                 Tuple<String, CK2Character> tuple = Tuple.Create<String, CK2Character>(charXMLLoc.Item1, character);
                 charInfo.Add(tuple);
             }

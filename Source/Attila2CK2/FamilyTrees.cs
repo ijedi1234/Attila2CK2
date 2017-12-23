@@ -12,15 +12,15 @@ namespace Attila2CK2 {
         private Dictionary<String, FamilyTree> trees;
         private List<List<string>> esfFamilyTreeStructure;
 
-        public FamilyTrees(ImportantPaths paths, CharInfoCreator charInfoCreator) {
+        public FamilyTrees(ImportantPaths paths, CharInfoCreator charInfoCreator, DateConverter dtConverter) {
             allCharacters = new List<CK2Character>();
-            findESFFamilyTreeStructure(charInfoCreator, paths);
+            findESFFamilyTreeStructure(charInfoCreator, paths, dtConverter);
             trees = new Dictionary<string, FamilyTree>();
             Dictionary<String, List<CK2Character>> charInfo = reformatCharInfo(charInfoCreator.getCharInfo());
             createTrees(charInfoCreator, charInfo);
         }
 
-        private void findESFFamilyTreeStructure(CharInfoCreator charInfoCreator, ImportantPaths paths) {
+        private void findESFFamilyTreeStructure(CharInfoCreator charInfoCreator, ImportantPaths paths, DateConverter dtConverter) {
             string worldPath = paths.getSavegameXMLPath() + "\\campaign_env\\world-0000.xml";
             XmlDocument doc = new XmlDocument();
             try {
@@ -34,12 +34,12 @@ namespace Attila2CK2 {
                 }
                 XmlAttribute attr = node.Attributes[0];
                 if (attr.Name == "type" && attr.InnerText == "FAMILY_TREE") {
-                    extractESFFamilyTreeStructure(node, charInfoCreator);
+                    extractESFFamilyTreeStructure(node, charInfoCreator, dtConverter);
                 }
             }
         }
 
-        private void extractESFFamilyTreeStructure(XmlNode root, CharInfoCreator charInfoCreator) {
+        private void extractESFFamilyTreeStructure(XmlNode root, CharInfoCreator charInfoCreator, DateConverter dtConverter) {
             int treeSize = Int32.Parse(root.FirstChild.InnerText);
             esfFamilyTreeStructure = new List<List<string>>(treeSize);
             for (XmlNode node = root.FirstChild.NextSibling; node != null; node = node.NextSibling) {
@@ -57,13 +57,28 @@ namespace Attila2CK2 {
                         int detailCount = 0;
                         bool i1AryFound = false;
                         int countedUAfterPol = 0;
+                        bool foundGender = false;
+                        int ascCount = 0;
                         bool male = false;
                         int treeID = Int32.Parse(treeContents[0]);
                         string name = "";
+                        string birthStr = "";
+                        string deathStr = "";
                         for (XmlNode detailNode = treeContentItem.FirstChild; detailNode != null; detailNode = detailNode.NextSibling) {
-                            if (detailCount == 11) {
-                                male = (detailNode.Name == "yes");
+                            if (detailNode.Name == "asc") ascCount++;
+                            if (birthStr != "" && deathStr == "" && detailNode.Name == "date2") {
+                                deathStr = detailNode.InnerText;
                             }
+                            if (birthStr == "" && detailNode.Name == "date2") {
+                                birthStr = detailNode.InnerText;
+                            }
+                            if (foundGender == false && ascCount == 2 && (detailNode.Name == "yes" || detailNode.Name == "no")) {
+                                male = (detailNode.Name == "yes");
+                                foundGender = true;
+                            }/*
+                            if (detailCount == 12) {
+                                male = (detailNode.Name == "yes");
+                            }*/
                             if (detailNode.Name == "i1_ary") {
                                 i1AryFound = true;
                             }
@@ -84,7 +99,9 @@ namespace Attila2CK2 {
                                 name = charInfoCreator.extractName(detailNode);
                             }
                         }
-                        CK2Character character = new CK2Character(name, 0, treeID, male);
+                        DateTime birth = dtConverter.convertDate(birthStr);
+                        DateTime death = dtConverter.convertDate(deathStr);
+                        CK2Character character = new CK2Character(name, 0, treeID, male, birth, death);
                         allCharacters.Add(character);
                     }
                 }

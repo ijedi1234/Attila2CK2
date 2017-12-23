@@ -17,15 +17,32 @@ namespace Attila2CK2 {
             discoverTree(this.root, familyID2Characters, esfFamilyTreeStructure);
             //dynasty = new CK2Dynasty("HolderTree");
             dynasty = this.deriveDynasty();
-            foreach (CK2Character character in factionCharacters) {
-                character.setDynasty(dynasty);
-            }
+            updateDynasty(dynasty);
         }
 
-        public void replaceDynasty(CK2Dynasty newDynasty) {
-            foreach (CK2Character character in localCharacters) {
-                character.setDynasty(newDynasty);
+        public void updateDynasty(CK2Dynasty newDynasty) {
+            this.dynasty = newDynasty;
+            updateDynastyForCharacter(root, newDynasty);
+        }
+
+        private void updateDynastyForCharacter(CK2Character character, CK2Dynasty newDynasty) {
+            character.setDynasty(newDynasty);
+            CK2Character father = character.getFather();
+            if (father != null) {
+                CK2Dynasty fatherDynasty = father.getDynasty();
+                if (fatherDynasty == null || fatherDynasty.getID() != newDynasty.getID())
+                    updateDynastyForCharacter(father, newDynasty);
             }
+            List<CK2Character> children = character.getChildren();
+            if(children != null)
+                foreach (CK2Character child in children) {
+                    CK2Dynasty childDynasty = child.getDynasty();
+                    if (childDynasty == null || childDynasty.getID() != newDynasty.getID())
+                        updateDynastyForCharacter(child, newDynasty);
+                }
+            //foreach (CK2Character characterS in localCharacters) {
+            //    characterS.setDynasty(newDynasty);
+            //}
         }
 
         private void deriveJobs(CharInfoCreator charInfoCreator) {
@@ -55,19 +72,26 @@ namespace Attila2CK2 {
             int fatherID = Int32.Parse(familyTreeInfo[4]);
             int spouseID = Int32.Parse(familyTreeInfo[5]);
             //This is apparently spouse-related (?)
-            int numSpouses = Int32.Parse(familyTreeInfo[6]);
-            if (spouseID == 0 && numSpouses > 0) spouseID = Int32.Parse(familyTreeInfo[7]);
-            int numChildrenPos = numSpouses + 7;
+            int numSpousesPos = 6;
+            int numSpouses = Int32.Parse(familyTreeInfo[numSpousesPos]);
+            if (spouseID == 0 && numSpouses > 0) spouseID = Int32.Parse(familyTreeInfo[numSpousesPos + 1]);
+            int numChildrenPos = numSpouses + numSpousesPos + 1;
             int numChildren = Int32.Parse(familyTreeInfo[numChildrenPos]);
+            int numAdoptedPos = numChildren + numChildrenPos + 1;
+            int numAdopted = Int32.Parse(familyTreeInfo[numAdoptedPos]);
             List<int> childrenIDs = new List<int>(numChildren);
             for (int i = 0; i < numChildren; i++) {
-                int childID = Int32.Parse(familyTreeInfo[numChildrenPos + 1 + i]);
+                int childID = Int32.Parse(familyTreeInfo[numChildrenPos + i + 1]);
+                childrenIDs.Add(childID);
+            }
+            for (int i = 0; i < numAdopted; i++) {
+                int childID = Int32.Parse(familyTreeInfo[numAdoptedPos + i + 1]);
                 childrenIDs.Add(childID);
             }
             if (fatherID != 0) character.setFather(familyID2Characters[fatherID]);
             if (spouseID != 0) character.setSpouse(familyID2Characters[spouseID]);
-            if (numChildren != 0) {
-                List<CK2Character> children = new List<CK2Character>(numChildren);
+            if ((numChildren + numAdopted) != 0) {
+                List<CK2Character> children = new List<CK2Character>(numChildren + numAdopted);
                 foreach (int childID in childrenIDs) {
                     children.Add(familyID2Characters[childID]);
                 }
@@ -76,6 +100,11 @@ namespace Attila2CK2 {
                 else
                     character.setChildren(children);
             }
+            int booleanPrefacePos = numAdopted + numAdoptedPos + 1;
+            int booleanListPos = booleanPrefacePos + 2;
+            bool isBastard = (familyTreeInfo[booleanListPos + 2] == "yes");
+            character.setIsBastard(isBastard);
+
             //Skip the spouse. She is handled in the next run.
             {
                 CK2Character father = character.getFather();
