@@ -8,8 +8,8 @@ using System.IO;
 namespace Attila2CK2 {
     class OutputCommonDynasties {
 
-        public static void output(FactionsInfo factions) {
-            List<CK2Dynasty> dynasties = factions.getDynasties();
+        public static void output(FamilyTrees trees) {
+            List<CK2Dynasty> dynasties = trees.getDynasties();
             string filename = ImportantPaths.getOutputPath() + "\\common\\dynasties\\attila_dynasties.txt";
             using (StreamWriter writer = File.CreateText(filename)) {
                 foreach (CK2Dynasty dynasty in dynasties) {

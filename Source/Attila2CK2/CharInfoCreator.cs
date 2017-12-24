@@ -11,16 +11,18 @@ namespace Attila2CK2 {
 
         private Dictionary<String, String> nameIDMap;
         List<Tuple<String, CK2Character>> charInfo;
+        private Dictionary<String, String> faction2ReligionMap;
         Dictionary<int, string> esfID2Job;
 
-        public CharInfoCreator(ImportantPaths importantPaths, DateConverter dtConverter) {
+        public CharInfoCreator(ImportantPaths importantPaths, DateConverter dtConverter, ReligionsInfo religions) {
             esfID2Job = new Dictionary<int, string>();
-            List<Tuple<String, String>> charXMLLocs = getCharXMLLocs(importantPaths);
+            faction2ReligionMap = new Dictionary<string, string>();
+            List<Tuple<String, String>> charXMLLocs = getCharXMLLocs(importantPaths, religions);
             nameIDMap = generateNameIDMap();
             charInfo = generateCharInfo(importantPaths, charXMLLocs, dtConverter);
         }
 
-        private List<Tuple<String, String>> getCharXMLLocs(ImportantPaths importantPaths) {
+        private List<Tuple<String, String>> getCharXMLLocs(ImportantPaths importantPaths, ReligionsInfo religions) {
             string factionsPath = importantPaths.getSavegameXMLPath() + "\\factions";
             string[] factionXMLs = Directory.GetFiles(factionsPath);
             List<Tuple<String, String>> charXMLs = new List<Tuple<String, String>>();
@@ -29,6 +31,7 @@ namespace Attila2CK2 {
                 string absoluteName = dirItems[dirItems.Length - 1];
                 if (!absoluteName.StartsWith("att_fact_"))
                     continue;
+                string faction = absoluteName.Substring(0, absoluteName.Length - 4);
                 XmlDocument doc = new XmlDocument();
                 try {
                     doc.Load(xmlPath);
@@ -42,12 +45,16 @@ namespace Attila2CK2 {
                         continue;
                     }
                     XmlAttribute attr = node.Attributes[0];
+                    if (attr.Name == "type" && attr.InnerText == "FACTION_RELIGION_MANAGER") {
+                        string attilaReligion = node.FirstChild.InnerText;
+                        string ck2Religion = religions.getCK2Religion(attilaReligion);
+                        faction2ReligionMap.Add(faction, ck2Religion);
+                    }
                     if (attr.Name == "type" && attr.InnerText == "CHARACTER_ARRAY") {
                         for (XmlNode charNode = node.FirstChild; charNode != null; charNode = charNode.NextSibling) {
                             string path = charNode.Attributes[0].InnerText;
                             //Garrison leader
                             if (path.StartsWith("character/colonel")) continue;
-                            string faction = absoluteName.Substring(0,absoluteName.Length - 4);
                             Tuple<String, String> tuple = Tuple.Create<String, String>(faction, path);
                             charXMLs.Add(tuple);
                         }
@@ -142,7 +149,8 @@ namespace Attila2CK2 {
                 }
                 DateTime birth = dtConverter.convertDate(birthStr);
                 DateTime death = dtConverter.convertDate("1 0 0 0");
-                CK2Character character = new CK2Character(name, esfID, treeID, male, birth, death);
+                string religion = faction2ReligionMap[charXMLLoc.Item1];
+                CK2Character character = new CK2Character(name, esfID, treeID, male, birth, death, religion);
                 Tuple<String, CK2Character> tuple = Tuple.Create<String, CK2Character>(charXMLLoc.Item1, character);
                 charInfo.Add(tuple);
             }
@@ -154,6 +162,13 @@ namespace Attila2CK2 {
             XmlNode firstNameNode = namesBlock.FirstChild.FirstChild;
             string firstNameObfuscated = firstNameNode.InnerText;
             string firstName = nameIDMap[firstNameObfuscated];
+            try {
+                XmlNode secondNameNode = namesBlock.FirstChild.NextSibling.NextSibling.FirstChild;
+                string secondNameObfuscated = secondNameNode.InnerText;
+                string secondName = nameIDMap[secondNameObfuscated];
+                return (firstName + " " + secondName).Trim();
+            }
+            catch (Exception) { }
             return firstName;
         }
 

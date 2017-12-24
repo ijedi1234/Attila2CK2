@@ -10,39 +10,68 @@ namespace Attila2CK2 {
         List<CK2Character> localCharacters;
         private CK2Character root;
         private CK2Dynasty dynasty;
+        private string religion;
+        Dictionary<int, CK2Character> fam2Char;
+        HashSet<CK2Dynasty> associatedDynasties;
 
         public FamilyTree(CharInfoCreator charInfoCreator, List<CK2Character> factionCharacters, Dictionary<int, CK2Character> familyID2Characters, List<List<string>> esfFamilyTreeStructure) {
+            this.associatedDynasties = new HashSet<CK2Dynasty>();
             this.localCharacters = factionCharacters;
+            this.fam2Char = familyID2Characters;
             deriveJobs(charInfoCreator);
+            religion = this.root.getReligion();
             discoverTree(this.root, familyID2Characters, esfFamilyTreeStructure);
             //dynasty = new CK2Dynasty("HolderTree");
-            dynasty = this.deriveDynasty();
-            updateDynasty(dynasty);
+            dynasty = this.deriveDynasty(root);
+            updateDynasty(dynasty, root, true);
+            updateReligion(root, true);
         }
 
-        public void updateDynasty(CK2Dynasty newDynasty) {
-            this.dynasty = newDynasty;
-            updateDynastyForCharacter(root, newDynasty);
+        public void updateDynasty(CK2Dynasty newDynasty, CK2Character character, bool canOverwrite) {
+            associatedDynasties.Add(newDynasty);
+            HashSet<int> processed = new HashSet<int>();
+            updateDynastyForCharacter(character, newDynasty, canOverwrite, processed);
         }
 
-        private void updateDynastyForCharacter(CK2Character character, CK2Dynasty newDynasty) {
-            character.setDynasty(newDynasty);
+        private void updateDynastyForCharacter(CK2Character character, CK2Dynasty newDynasty, bool canOverwrite, HashSet<int> processed) {
+            bool hasChar = !(processed.Add(character.getFamilyTreeID()));
+            if (hasChar) return;
+            if(character.getDynasty() == null || canOverwrite)
+                character.setDynasty(newDynasty);
             CK2Character father = character.getFather();
             if (father != null) {
-                CK2Dynasty fatherDynasty = father.getDynasty();
-                if (fatherDynasty == null || fatherDynasty.getID() != newDynasty.getID())
-                    updateDynastyForCharacter(father, newDynasty);
+                //CK2Dynasty fatherDynasty = father.getDynasty();
+                //if (fatherDynasty == null || fatherDynasty.getID() != newDynasty.getID())
+                updateDynastyForCharacter(father, newDynasty, canOverwrite, processed);
             }
             List<CK2Character> children = character.getChildren();
             if(children != null)
                 foreach (CK2Character child in children) {
-                    CK2Dynasty childDynasty = child.getDynasty();
-                    if (childDynasty == null || childDynasty.getID() != newDynasty.getID())
-                        updateDynastyForCharacter(child, newDynasty);
+                    //CK2Dynasty childDynasty = child.getDynasty();
+                    //if (childDynasty == null || childDynasty.getID() != newDynasty.getID())
+                    updateDynastyForCharacter(child, newDynasty, canOverwrite, processed);
                 }
-            //foreach (CK2Character characterS in localCharacters) {
-            //    characterS.setDynasty(newDynasty);
-            //}
+        }
+
+        public void updateReligion(CK2Character character, bool canOverwrite) {
+            HashSet<int> processed = new HashSet<int>();
+            updateReligionForCharacter(character, canOverwrite, processed);
+        }
+
+        public void updateReligionForCharacter(CK2Character character, bool canOverwrite, HashSet<int> processed) {
+            bool hasChar = !(processed.Add(character.getFamilyTreeID()));
+            if (hasChar) return;
+            if(character.getReligion() == null || canOverwrite)
+                character.setReligion(this.religion);
+            CK2Character father = character.getFather();
+            if (father != null) {
+                updateReligionForCharacter(father, canOverwrite, processed);
+            }
+            List<CK2Character> children = character.getChildren();
+            if (children != null)
+                foreach (CK2Character child in children) {
+                    updateReligionForCharacter(child, canOverwrite, processed);
+                }
         }
 
         private void deriveJobs(CharInfoCreator charInfoCreator) {
@@ -57,8 +86,8 @@ namespace Attila2CK2 {
             }
         }
 
-        private CK2Dynasty deriveDynasty() {
-            CK2Character curChar = root;
+        private CK2Dynasty deriveDynasty(CK2Character character) {
+            CK2Character curChar = character;
             while (curChar.getFather() != null) {
                 curChar = curChar.getFather();
             }
@@ -105,7 +134,7 @@ namespace Attila2CK2 {
             bool isBastard = (familyTreeInfo[booleanListPos + 2] == "yes");
             character.setIsBastard(isBastard);
 
-            //Skip the spouse. She is handled in the next run.
+            //Skip the female->male spouse. She is handled in the next run.
             {
                 CK2Character father = character.getFather();
                 if(father != null) {
@@ -120,11 +149,44 @@ namespace Attila2CK2 {
                         if (!hasChar) discoverTree(child, familyID2Characters, esfFamilyTreeStructure);
                     }
                 }
+
+                //CK2Character spouse = character.getSpouse();
+                //if (character.getIsMale() && spouse != null) {
+                //    discoverTree(spouse, familyID2Characters, esfFamilyTreeStructure);
+                //}
             }
         }
 
+        public void updateSpouses(CK2Character character, HashSet<int> processed, List<List<string>> esfFamilyTreeStructure) {
+            bool hasChar = !(processed.Add(character.getID()));
+            if(hasChar) return;
+            CK2Character spouse = character.getSpouse();
+            if (character.getSpouse() != null) {
+                CK2Dynasty spouseDynasty = character.getSpouse().getDynasty();
+                if (spouseDynasty == null) {
+                    discoverTree(spouse, fam2Char, esfFamilyTreeStructure);
+                    spouseDynasty = this.deriveDynasty(spouse);
+                    associatedDynasties.Add(spouseDynasty);
+                    updateDynasty(spouseDynasty, spouse, false);
+                    updateReligion(spouse, false);
+                }
+            }
+            CK2Character father = character.getFather();
+            if (father != null) {
+                updateSpouses(father, processed, esfFamilyTreeStructure);
+            }
+            List<CK2Character> children = character.getChildren();
+            if (children != null)
+                foreach (CK2Character child in children) {
+                    updateSpouses(child, processed, esfFamilyTreeStructure);
+                }
+        }
+
+
+
         public CK2Character getOwner() { return root; }
         public CK2Dynasty getDynasty() { return dynasty; }
+        public HashSet<CK2Dynasty> getAssociatedDynasties() { return associatedDynasties; }
 
     }
 }

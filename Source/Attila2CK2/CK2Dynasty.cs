@@ -19,7 +19,8 @@ namespace Attila2CK2 {
         }
 
         public CK2Dynasty(string name) {
-            this.name = name;
+            string[] nameSections = name.Trim().Split(' ');
+            this.name = nameSections[nameSections.Length - 1];
             this.id = CK2Dynasty.newIDnum;
             CK2Dynasty.newIDnum++;
         }

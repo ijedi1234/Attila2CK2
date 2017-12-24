@@ -18,6 +18,9 @@ namespace Attila2CK2 {
                     using (StreamWriter writer = File.CreateText(outputDir + "\\" + countyStr + ".txt")) {
                         writer.WriteLine(countyAcquireDate + "={");
                         writer.WriteLine("\tholder=" + faction.getOwner().getID());
+                        //if (faction.getOwner().getName() == "Giesmus") {
+                        //    int h = 0;
+                        //}
                         writer.WriteLine("}");
                     }
                 }

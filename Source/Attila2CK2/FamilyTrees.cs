@@ -18,6 +18,7 @@ namespace Attila2CK2 {
             trees = new Dictionary<string, FamilyTree>();
             Dictionary<String, List<CK2Character>> charInfo = reformatCharInfo(charInfoCreator.getCharInfo());
             createTrees(charInfoCreator, charInfo);
+            updateSpouses();
         }
 
         private void findESFFamilyTreeStructure(CharInfoCreator charInfoCreator, ImportantPaths paths, DateConverter dtConverter) {
@@ -101,7 +102,7 @@ namespace Attila2CK2 {
                         }
                         DateTime birth = dtConverter.convertDate(birthStr);
                         DateTime death = dtConverter.convertDate(deathStr);
-                        CK2Character character = new CK2Character(name, 0, treeID, male, birth, death);
+                        CK2Character character = new CK2Character(name, 0, treeID, male, birth, death, "");
                         allCharacters.Add(character);
                     }
                 }
@@ -137,6 +138,14 @@ namespace Attila2CK2 {
             }
         }
 
+        private void updateSpouses() {
+            foreach (var pair in trees) {
+                FamilyTree tree = pair.Value;
+                HashSet<int> processed = new HashSet<int>();
+                tree.updateSpouses(tree.getOwner(), processed, esfFamilyTreeStructure);
+            }
+        }
+
         public FamilyTree getTree(string factionID) {
             try {
                 return trees[factionID];
@@ -144,6 +153,18 @@ namespace Attila2CK2 {
             catch (Exception) {
                 return null;
             }
+        }
+
+        public List<CK2Dynasty> getDynasties() {
+            List<CK2Dynasty> dynasties = new List<CK2Dynasty>();
+            foreach (var pair in trees) {
+                FamilyTree tree = pair.Value;
+                HashSet<CK2Dynasty> treeDynasties = tree.getAssociatedDynasties();
+                foreach (CK2Dynasty assocDynasty in treeDynasties) {
+                    dynasties.Add(assocDynasty);
+                }
+            }
+            return dynasties;
         }
 
     }

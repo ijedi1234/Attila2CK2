@@ -27,7 +27,7 @@ namespace Attila2CK2 {
             string savegameXMLPath = "D:\\Program Files (x86)\\TotalWarEditors\\esfxml\\output\\compressed_data";
             importantPaths = new ImportantPaths(savegameXMLPath);
             DateConverter dtConverter = new DateConverter(importantPaths);
-            CharInfoCreator charInfoCreator = new CharInfoCreator(importantPaths, dtConverter);
+            CharInfoCreator charInfoCreator = new CharInfoCreator(importantPaths, dtConverter, religionsInfo);
             FamilyTrees famTrees = new FamilyTrees(importantPaths, charInfoCreator, dtConverter);
             factionsInfo.updateImportantPaths(importantPaths);
             factionsInfo.readFactionXMLs();
@@ -40,7 +40,7 @@ namespace Attila2CK2 {
             MoveFlags.move(factionsInfo);
 
             OutputCommonLandedTitles.output(factionsInfo);
-            OutputCommonDynasties.output(factionsInfo);
+            OutputCommonDynasties.output(famTrees);
             OutputCommonCultures.outputProvinceSpecific(attilaRegionsInfo);
 
             OutputCharacterHistories.output(factionsInfo);

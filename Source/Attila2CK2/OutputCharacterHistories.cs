@@ -35,11 +35,15 @@ namespace Attila2CK2 {
                 foreach (CK2Character child in children) {
                     selectCharacter(writtenCharacters, writer, child);
                 }
+            CK2Character spouse = character.getSpouse();
+            selectCharacter(writtenCharacters, writer, spouse);
         }
 
         private static void writeCharacter(StreamWriter writer, CK2Character character) {
             CK2Dynasty dynasty = character.getDynasty();
-            int dynastyID = dynasty.getID();
+            int dynastyID = 0;
+            if(dynasty != null)
+                dynastyID = dynasty.getID();
             string name = character.getName();
             int charID = character.getID();
             int dob = character.getBirthDay();
@@ -51,7 +55,7 @@ namespace Attila2CK2 {
                 writer.WriteLine("\tdynasty=" + dynastyID);
             else
                 writer.WriteLine("\tdynasty=" + "NONE");
-            writer.WriteLine("\treligion=\"catholic\"");
+            writer.WriteLine("\treligion=\"" + character.getReligion() +"\"");
             writer.WriteLine("\tculture=\"english\"");
 
             if (character.getIsMale() == false) {
@@ -70,6 +74,16 @@ namespace Attila2CK2 {
             writer.WriteLine("\t\tbirth=yes");
             writer.WriteLine("\t}");
 
+            if (character.getSpouse() != null) {
+                DateTime maxBirthDT = maxBirth(character.getBirth(), character.getSpouse().getBirth());
+                int yom = maxBirthDT.Year;
+                int mom = maxBirthDT.Month + 1;
+                int dom = maxBirthDT.Day + 1;
+                writer.WriteLine("\t" + yom + "." + mom + "." + dom + "={");
+                writer.WriteLine("\t\tadd_spouse=" + character.getSpouse().getID());
+                writer.WriteLine("\t}");
+            }
+
             if (character.getAlive() == false) {
                 int dod = character.getDeathDay();
                 int mod = character.getDeathMonth();
@@ -80,6 +94,23 @@ namespace Attila2CK2 {
             }
 
             writer.WriteLine("}");
+        }
+
+        private static DateTime maxBirth(DateTime d1, DateTime d2) {
+            if (d1.Year == d2.Year) {
+                if (d1.Month >= d2.Month) {
+                    return d1;
+                }
+                else {
+                    return d2;
+                }
+            }
+            else if (d1.Year > d2.Year) {
+                return d1;
+            }
+            else {
+                return d2;
+            }
         }
 
     }

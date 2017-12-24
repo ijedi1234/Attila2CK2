@@ -90,7 +90,7 @@ namespace Attila2CK2 {
             XmlNode root = doc.DocumentElement;
             this.numID = Int32.Parse(root.FirstChild.FirstChild.InnerText);
         }
-
+        
         public void addCounty(String county) { countiesOwned.Add(county); }
         public void setExists(bool exists) { this.exists = exists; }
         public void setOwner(CK2Character owner) { this.owner = owner; }

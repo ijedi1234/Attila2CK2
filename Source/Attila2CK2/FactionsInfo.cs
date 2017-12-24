@@ -121,7 +121,7 @@ namespace Attila2CK2 {
                 if (faction.getDynasty() != null) {
                     dynasty = faction.getDynasty();
                     if (tree != null)
-                        tree.updateDynasty(dynasty);
+                        tree.updateDynasty(dynasty, character, true);
                 }
                 else {
                     if (tree != null)
