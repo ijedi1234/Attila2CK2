@@ -11,14 +11,50 @@ namespace Attila2CK2 {
         public static void output(FactionsInfo factionsObj) {
             List<CK2Character> owners = factionsObj.getOwners();
             List<FactionInfo> factions = factionsObj.getFactions();
-            string filename = ImportantPaths.getOutputPath() + "\\history\\characters\\english.txt";
-            using (StreamWriter writer = File.CreateText(filename)) {
-                foreach (FactionInfo faction in factions) {
-                    if (!faction.getExists()) continue;
-                    CK2Character owner = faction.getOwner();
-                    HashSet<int> writtenCharacters = new HashSet<int>();
-                    selectCharacter(writtenCharacters, writer, owner);
+            Dictionary<string, HashSet<CK2Character>> charactersToOutput = new Dictionary<string, HashSet<CK2Character>>();
+            foreach (FactionInfo faction in factions) {
+                if (!faction.getExists()) continue;
+                CK2Character owner = faction.getOwner();
+                HashSet<int> writtenCharacters = new HashSet<int>();
+                selectCharacter(writtenCharacters, owner, charactersToOutput);
+            }
+            foreach (var pair in charactersToOutput) {
+                string filename = ImportantPaths.getOutputPath() + "\\history\\characters\\" + pair.Key + ".txt";
+                HashSet<CK2Character> characters = pair.Value;
+                using (StreamWriter writer = File.CreateText(filename)) {
+                    foreach (CK2Character character in characters) {
+                        writeCharacter(writer, character);
+                    }
                 }
+            }
+        }
+
+        private static void selectCharacter(HashSet<int> writtenCharacters, CK2Character character, Dictionary<string, HashSet<CK2Character>> charactersToOutput) {
+            if (character == null) return;
+            bool bWritten = !(writtenCharacters.Add(character.getID()));
+            if (bWritten)
+                return;
+            appendCharToCTO(character, charactersToOutput);
+            CK2Character father = character.getFather();
+            selectCharacter(writtenCharacters, father, charactersToOutput);
+            List<CK2Character> children = character.getChildren();
+            if (children != null)
+                foreach (CK2Character child in children) {
+                    selectCharacter(writtenCharacters, child, charactersToOutput);
+                }
+            CK2Character spouse = character.getSpouse();
+            selectCharacter(writtenCharacters, spouse, charactersToOutput);
+        }
+
+        private static void appendCharToCTO(CK2Character character, Dictionary<string, HashSet<CK2Character>> charactersToOutput) {
+            try {
+                HashSet<CK2Character> charList = charactersToOutput[character.getCulture()];
+                charList.Add(character);
+            }
+            catch (Exception) {
+                HashSet<CK2Character> charList = new HashSet<CK2Character>();
+                charList.Add(character);
+                charactersToOutput.Add(character.getCulture(), charList);
             }
         }
 
@@ -56,7 +92,7 @@ namespace Attila2CK2 {
             else
                 writer.WriteLine("\tdynasty=" + "NONE");
             writer.WriteLine("\treligion=\"" + character.getReligion() +"\"");
-            writer.WriteLine("\tculture=\"english\"");
+            writer.WriteLine("\tculture=\"" + character.getCulture() + "\"");
 
             if (character.getIsMale() == false) {
                 writer.WriteLine("\tfemale=yes");

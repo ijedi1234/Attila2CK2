@@ -12,14 +12,30 @@ namespace Attila2CK2 {
         private Dictionary<String, String> nameIDMap;
         List<Tuple<String, CK2Character>> charInfo;
         private Dictionary<String, String> faction2ReligionMap;
+        private Dictionary<String, String> faction2CultureMap;
         Dictionary<int, string> esfID2Job;
 
         public CharInfoCreator(ImportantPaths importantPaths, DateConverter dtConverter, ReligionsInfo religions) {
             esfID2Job = new Dictionary<int, string>();
             faction2ReligionMap = new Dictionary<string, string>();
+            faction2CultureMap = buildCultureMap();
             List<Tuple<String, String>> charXMLLocs = getCharXMLLocs(importantPaths, religions);
             nameIDMap = generateNameIDMap();
             charInfo = generateCharInfo(importantPaths, charXMLLocs, dtConverter);
+        }
+
+        private Dictionary<string, string> buildCultureMap() {
+            Dictionary<string, string> map = new Dictionary<string, string>();
+            string cultureMapFilename = ImportantPaths.conversionInfoPath() + "\\cultures\\factionCultureMap.csv";
+            using (var cultureMapReader = new StreamReader(cultureMapFilename)) {
+                while (!cultureMapReader.EndOfStream) {
+                    string[] pair = cultureMapReader.ReadLine().Split(',');
+                    string faction = pair[0];
+                    string culture = pair[1];
+                    map.Add(faction, culture);
+                }
+            }
+            return map;
         }
 
         private List<Tuple<String, String>> getCharXMLLocs(ImportantPaths importantPaths, ReligionsInfo religions) {
@@ -150,7 +166,12 @@ namespace Attila2CK2 {
                 DateTime birth = dtConverter.convertDate(birthStr);
                 DateTime death = dtConverter.convertDate("1 0 0 0");
                 string religion = faction2ReligionMap[charXMLLoc.Item1];
-                CK2Character character = new CK2Character(name, esfID, treeID, male, birth, death, religion);
+                string culture = "";
+                try {
+                    culture = faction2CultureMap[charXMLLoc.Item1];
+                }
+                catch (Exception) { }
+                CK2Character character = new CK2Character(name, esfID, treeID, male, birth, death, religion, culture);
                 Tuple<String, CK2Character> tuple = Tuple.Create<String, CK2Character>(charXMLLoc.Item1, character);
                 charInfo.Add(tuple);
             }

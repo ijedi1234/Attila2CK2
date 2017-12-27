@@ -23,6 +23,7 @@ namespace Attila2CK2 {
         private DateTime death;
 
         private string religion;
+        private string culture;
 
         private CK2Dynasty dynasty;
         private CK2Character father;
@@ -37,9 +38,10 @@ namespace Attila2CK2 {
             this.birth = new DateTime(740, 4, 2);
             this.death = new DateTime(1, 1, 1);
             this.isMale = true;
+            this.culture = "";
         }
 
-        public CK2Character(string name, int esfID, int treeID, bool male, DateTime birth, DateTime death, string religion) {
+        public CK2Character(string name, int esfID, int treeID, bool male, DateTime birth, DateTime death, string religion, string culture) {
             this.name = name;
             this.esfID = esfID;
             this.treeID = treeID;
@@ -49,6 +51,7 @@ namespace Attila2CK2 {
             this.religion = religion;
             this.birth = birth;
             this.death = death;
+            this.culture = culture;
         }
 
         public void setOffice(string office) { 
@@ -69,6 +72,10 @@ namespace Attila2CK2 {
             this.children = children;
         }
 
+        public void incrementBirthDay(CK2Character character) {
+            this.birth = character.getBirth().AddDays(1);
+        }
+
         public int getID() { return id; }
         public int getESFID() { return esfID; }
         public int getFamilyTreeID() { return treeID; }
@@ -78,6 +85,8 @@ namespace Attila2CK2 {
 
         public void setReligion(string religion) { this.religion = religion; }
         public string getReligion() { return religion; }
+        public void setCulture(string culture) { this.culture = culture; }
+        public string getCulture() { return culture; }
 
         public DateTime getBirth() { return birth; }
         public int getBirthMonth() { return birth.Month; }

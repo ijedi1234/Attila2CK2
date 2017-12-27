@@ -102,7 +102,7 @@ namespace Attila2CK2 {
                         }
                         DateTime birth = dtConverter.convertDate(birthStr);
                         DateTime death = dtConverter.convertDate(deathStr);
-                        CK2Character character = new CK2Character(name, 0, treeID, male, birth, death, "");
+                        CK2Character character = new CK2Character(name, 0, treeID, male, birth, death, "", "");
                         allCharacters.Add(character);
                     }
                 }

@@ -38,6 +38,7 @@ namespace Attila2CK2 {
             DirectoryHierarchyCreator.createOutputDirectories();
 
             MoveFlags.move(factionsInfo);
+            MoveCultures.move();
 
             OutputCommonLandedTitles.output(factionsInfo);
             OutputCommonDynasties.output(famTrees);

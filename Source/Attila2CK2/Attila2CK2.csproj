@@ -64,6 +64,7 @@
     </Compile>
     <Compile Include="ImportantPaths.cs" />
     <Compile Include="LocalisationFormatter.cs" />
+    <Compile Include="MoveCultures.cs" />
     <Compile Include="MoveFlags.cs" />
     <Compile Include="OutputCharacterHistories.cs" />
     <Compile Include="OutputCommonCultures.cs" />

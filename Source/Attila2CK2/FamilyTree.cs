@@ -11,6 +11,7 @@ namespace Attila2CK2 {
         private CK2Character root;
         private CK2Dynasty dynasty;
         private string religion;
+        private string culture;
         Dictionary<int, CK2Character> fam2Char;
         HashSet<CK2Dynasty> associatedDynasties;
 
@@ -19,12 +20,15 @@ namespace Attila2CK2 {
             this.localCharacters = factionCharacters;
             this.fam2Char = familyID2Characters;
             deriveJobs(charInfoCreator);
+            if (this.root.getCulture() == "") this.root.setCulture("english");
             religion = this.root.getReligion();
+            culture = this.root.getCulture();
             discoverTree(this.root, familyID2Characters, esfFamilyTreeStructure);
             //dynasty = new CK2Dynasty("HolderTree");
             dynasty = this.deriveDynasty(root);
             updateDynasty(dynasty, root, true);
             updateReligion(root, true);
+            updateCulture(root, true);
         }
 
         public void updateDynasty(CK2Dynasty newDynasty, CK2Character character, bool canOverwrite) {
@@ -71,6 +75,27 @@ namespace Attila2CK2 {
             if (children != null)
                 foreach (CK2Character child in children) {
                     updateReligionForCharacter(child, canOverwrite, processed);
+                }
+        }
+
+        public void updateCulture(CK2Character character, bool canOverwrite) {
+            HashSet<int> processed = new HashSet<int>();
+            updateCultureForCharacter(character, canOverwrite, processed);
+        }
+
+        public void updateCultureForCharacter(CK2Character character, bool canOverwrite, HashSet<int> processed) {
+            bool hasChar = !(processed.Add(character.getFamilyTreeID()));
+            if (hasChar) return;
+            if (character.getCulture() == null || character.getCulture() == "" || canOverwrite)
+                character.setCulture(this.culture);
+            CK2Character father = character.getFather();
+            if (father != null) {
+                updateCultureForCharacter(father, canOverwrite, processed);
+            }
+            List<CK2Character> children = character.getChildren();
+            if (children != null)
+                foreach (CK2Character child in children) {
+                    updateCultureForCharacter(child, canOverwrite, processed);
                 }
         }
 
@@ -140,6 +165,9 @@ namespace Attila2CK2 {
                 if(father != null) {
                     bool hasChar = (father.getChildren() != null);
                     if (!hasChar) discoverTree(father, familyID2Characters, esfFamilyTreeStructure);
+                    if (character.getBirth().CompareTo(father.getBirth()) <= 0) {
+                        character.incrementBirthDay(father);
+                    }
                 }
 
                 List<CK2Character> children = character.getChildren();
@@ -169,6 +197,7 @@ namespace Attila2CK2 {
                     associatedDynasties.Add(spouseDynasty);
                     updateDynasty(spouseDynasty, spouse, false);
                     updateReligion(spouse, false);
+                    updateCulture(spouse, false);
                 }
             }
             CK2Character father = character.getFather();
