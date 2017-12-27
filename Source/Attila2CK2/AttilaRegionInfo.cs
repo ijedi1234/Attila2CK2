@@ -16,7 +16,7 @@ namespace Attila2CK2 {
         private List<Tuple<string, double>> religionBreakdown;
         private string strongestReligion;
         private List<String> ck2Regions;
-        private string owningFaction;
+        private FactionInfo owningFaction;
 
         public AttilaRegionInfo(ImportantPaths importantPaths, string regionXML, RegionMapper map, FactionsInfo factions) {
             this.importantPaths = importantPaths;
@@ -46,7 +46,7 @@ namespace Attila2CK2 {
                 else if (nodePos == 10) {
                     int ownerNumID = Int32.Parse(node.InnerText);
                     FactionInfo faction = factions.getFactionByNumID(ownerNumID);
-                    if (faction != null) this.owningFaction = faction.getID();
+                    if (faction != null) this.owningFaction = faction;
                 }
                 else if (nodePos == 23) {
                     if (node.Name == "yes") burned = true;
@@ -125,7 +125,7 @@ namespace Attila2CK2 {
         public bool getIsBurned() { return burned; }
         public string getMostPowerfulReligion() { return strongestReligion; }
         public List<String> getCK2Regions() { return ck2Regions; }
-        public string getOwningFaction() { return owningFaction; }
+        public FactionInfo getOwningFaction() { return owningFaction; }
 
     }
 }

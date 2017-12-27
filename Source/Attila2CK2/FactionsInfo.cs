@@ -101,7 +101,7 @@ namespace Attila2CK2 {
             foreach (FactionInfo faction in factionPreProcessMappings) {
                 faction.setExists(regions.checkIfFactionExists(faction.getID()));
                 foreach (AttilaRegionInfo region in regionsInfo) {
-                    if (region.getOwningFaction() == faction.getID() && !region.getIsBurned()) {
+                    if (!region.getIsBurned() && region.getOwningFaction().getID() == faction.getID()) {
                         List<String> ck2Regions = region.getCK2Regions();
                         foreach (String ck2Region in ck2Regions) {
                             faction.addCounty(ck2Region);

@@ -247,7 +247,7 @@ latin = {
 israelite = {
 
 	yemenite = {
-		graphical_cultures = { byzantinegfx }
+		graphical_cultures = { arabicgfx muslimgfx }
 		
 		color = { 0.5 0.4 0.6 }
 
@@ -1620,7 +1620,7 @@ central_african = {
 	graphical_cultures = { muslimgfx }
 
 	gaetuli = { # Berber
-		graphical_cultures = { arabicgfx muslimgfx }
+		graphical_cultures = { africangfx westafricangfx }
 		
 		color = { 0.3 0.9 0.2 }
 
@@ -1678,7 +1678,7 @@ central_african = {
 	}
 
 	garamantian = { # Berber
-		graphical_cultures = { arabicgfx muslimgfx }
+		graphical_cultures = { africangfx westafricangfx }
 		
 		color = { 0.3 0.95 0.25 }
 

@@ -7,7 +7,7 @@ using System.IO;
 
 namespace Attila2CK2 {
     class OutputCommonCultures {
-
+        
         public static void outputProvinceSpecific(AttilaRegionsInfo attilaRegions) {
             string outputPath = ImportantPaths.getOutputPath() + "\\common\\cultures\\specialProvCultures.txt";
             List<AttilaRegionInfo> regions = attilaRegions.getList();
@@ -35,6 +35,6 @@ namespace Attila2CK2 {
                 writer.WriteLine("}");
             }
         }
-
+        
     }
 }

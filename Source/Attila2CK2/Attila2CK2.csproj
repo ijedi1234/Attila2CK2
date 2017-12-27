@@ -50,6 +50,7 @@
     <Compile Include="CK2CountyRegionInfo.cs" />
     <Compile Include="CK2Dynasty.cs" />
     <Compile Include="CK2RegionsInfo.cs" />
+    <Compile Include="CultureMaps.cs" />
     <Compile Include="DateConverter.cs" />
     <Compile Include="DirectoryHierarchyCreator.cs" />
     <Compile Include="FactionInfo.cs" />
@@ -70,10 +71,12 @@
     <Compile Include="OutputCommonCultures.cs" />
     <Compile Include="OutputCommonDynasties.cs" />
     <Compile Include="OutputCommonLandedTitles.cs" />
+    <Compile Include="OutputCultureLocalisation.cs" />
     <Compile Include="OutputProvinceHistories.cs" />
     <Compile Include="OutputTitleHistories.cs" />
     <Compile Include="OutputTitleLocalisation.cs" />
     <Compile Include="Program.cs" />
+    <Compile Include="ProjectSettingsReader.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="AttilaRegionsInfo.cs" />
     <Compile Include="RegionMapper.cs" />

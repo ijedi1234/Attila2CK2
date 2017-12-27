@@ -26,9 +26,9 @@ namespace Attila2CK2 {
             }
         }
 
-        public bool checkIfFactionExists(string factionName) {
+        public bool checkIfFactionExists(string factionID) {
             foreach(AttilaRegionInfo region in attilaRegionMappings) {
-                if (!region.getIsBurned() && region.getOwningFaction() == factionName) {
+                if (!region.getIsBurned() && region.getOwningFaction().getID() == factionID) {
                     return true;
                 }
             }

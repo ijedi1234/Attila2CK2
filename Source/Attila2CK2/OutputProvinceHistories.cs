@@ -24,6 +24,12 @@ namespace Attila2CK2 {
         }
 
         private static void writeProvinceHistory(AttilaRegionInfo attilaRegion, CK2CountyRegionInfo ck2County, ReligionsInfo religions) {
+            //Remove ifs if going province specific
+            if (attilaRegion.getIsBurned()) return;
+            FactionInfo faction = attilaRegion.getOwningFaction();
+            if (faction.getID().Contains("fact_separatist") || faction.getID().Contains("fact_rebel")) {
+                return;
+            }
             string filename = ck2County.getFilename();
             string outputPath = ImportantPaths.getOutputPath() + "\\history\\provinces\\" + filename;
             HashSet<String> baronies = ck2County.getBaronies();
@@ -47,7 +53,9 @@ namespace Attila2CK2 {
                 }
                 writer.WriteLine("");
                 writer.WriteLine("# Misc");
-                writer.WriteLine("culture = " + attilaRegion.getIDStr());
+                string culture = faction.getOwner().getCulture();
+                writer.WriteLine("culture = " + culture);
+                //writer.WriteLine("culture = " + attilaRegion.getIDStr());
                 writer.WriteLine("religion = " + religions.getCK2Religion(attilaRegion.getMostPowerfulReligion()));
                 writer.WriteLine("");
                 writer.WriteLine("# History");
