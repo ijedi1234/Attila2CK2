@@ -3,11 +3,12 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Xml;
 
 namespace Attila2CK2 {
     class CK2Character {
 
-        private static int newIDnum = 157600001;
+        private static int newIDnum = deriveFirstCharID();
 
         private int id;
         private int esfID;
@@ -74,6 +75,24 @@ namespace Attila2CK2 {
 
         public void incrementBirthDay(CK2Character character) {
             this.birth = character.getBirth().AddDays(1);
+        }
+
+        private static int deriveFirstCharID() {
+            string settingsLoc = ImportantPaths.conversionInfoPath() + "\\settings.xml";
+            XmlDocument doc = new XmlDocument();
+            try {
+                doc.Load(settingsLoc);
+            }
+            catch (Exception) {
+                return 1000001;
+            }
+            XmlNode root = doc.DocumentElement;
+            for (XmlNode node = root.FirstChild; node != null; node = node.NextSibling) {
+                if (node.Name == "firstCharID") {
+                    return Int32.Parse(node.InnerText);
+                }
+            }
+            return 1000001;
         }
 
         public int getID() { return id; }

@@ -45,13 +45,17 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AttilaRegionInfo.cs" />
+    <Compile Include="AttilaRegionsInfoComparer.cs" />
     <Compile Include="CharInfoCreator.cs" />
     <Compile Include="CK2Character.cs" />
     <Compile Include="CK2CountyRegionInfo.cs" />
     <Compile Include="CK2Dynasty.cs" />
-    <Compile Include="CK2RegionsInfo.cs" />
+    <Compile Include="CK2CountyRegionsInfo.cs" />
     <Compile Include="CultureMaps.cs" />
     <Compile Include="DateConverter.cs" />
+    <Compile Include="DeJureDuchy.cs" />
+    <Compile Include="DeJureKingdom.cs" />
+    <Compile Include="DeJureTitles.cs" />
     <Compile Include="DirectoryHierarchyCreator.cs" />
     <Compile Include="FactionInfo.cs" />
     <Compile Include="FactionsInfo.cs" />

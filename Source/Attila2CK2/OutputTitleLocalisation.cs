@@ -54,5 +54,30 @@ namespace Attila2CK2 {
             }
         }
 
+        public static void outputDeJure(DeJureTitles titles) {
+            string outputFile = ImportantPaths.getOutputPath() + "\\localisation\\newDeJureTitles.csv";
+            List<DeJureKingdom> kingdoms = titles.getTitles();
+            using (StreamWriter writer = File.CreateText(outputFile)) {
+                foreach (DeJureKingdom kingdom in kingdoms) {
+                    outputDeJureInfo(writer, true, kingdom.getName(), kingdom.getScreenName(), kingdom.getScreenName());
+                    List<DeJureDuchy> duchies = kingdom.getDuchies();
+                    foreach (DeJureDuchy duchy in duchies) {
+                        outputDeJureInfo(writer, false, duchy.getName(), duchy.getScreenName(), duchy.getScreenName());
+                    }
+                }
+            }
+        }
+
+        private static void outputDeJureInfo(StreamWriter writer, bool isKingdom, string title, string name, string adjective) {
+            string prefix = "d";
+            if (isKingdom) prefix = "k";
+            string idName = prefix + "_attila_" + title;
+            string idAdj = prefix + "_attila_" + title + "_adj";
+            string lineName = LocalisationFormatter.format(idName, name);
+            writer.WriteLine(lineName);
+            string lineAdjective = LocalisationFormatter.format(idAdj, adjective);
+            writer.WriteLine(lineAdjective);
+        }
+
     }
 }

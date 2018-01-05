@@ -14,6 +14,8 @@ namespace Attila2CK2 {
         public AttilaRegionsInfo(ImportantPaths importantPaths, RegionMapper map, FactionsInfo factions) {
             this.importantPaths = importantPaths;
             getRegionXMLInfo(map, factions);
+            AttilaRegionsInfoComparer attilaComp = new AttilaRegionsInfoComparer();
+            attilaRegionMappings.Sort(attilaComp);
         }
 
         private void getRegionXMLInfo(RegionMapper map, FactionsInfo factions) {

@@ -52,7 +52,7 @@ namespace Attila2CK2 {
             }
         }
 
-        public static void outputv1History(CK2RegionsInfo ck2Regions) {
+        public static void outputv1History(CK2CountyRegionsInfo ck2Regions) {
             Dictionary<string, CK2CountyRegionInfo> counties = ck2Regions.getCountiesMap();
             string outputDir = ImportantPaths.getOutputPath() + "\\history\\titles";
             foreach (var countyPair in counties) {

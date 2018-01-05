@@ -8,7 +8,7 @@ using System.IO;
 namespace Attila2CK2 {
     class OutputProvinceHistories {
 
-        public static void output(AttilaRegionsInfo attilaRegions, CK2RegionsInfo ck2Regions, ReligionsInfo religions) {
+        public static void output(AttilaRegionsInfo attilaRegions, CK2CountyRegionsInfo ck2Regions, ReligionsInfo religions) {
             int count = 0;
             List<AttilaRegionInfo> attilaList = attilaRegions.getList();
             Dictionary<string, CK2CountyRegionInfo> ck2CountiesMap = ck2Regions.getCountiesMap();

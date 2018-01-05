@@ -6,11 +6,11 @@ using System.Threading.Tasks;
 using System.IO;
 
 namespace Attila2CK2 {
-    class CK2RegionsInfo {
+    class CK2CountyRegionsInfo {
 
         private Dictionary<string, CK2CountyRegionInfo> counties;
 
-        public CK2RegionsInfo(RegionMapper map) {
+        public CK2CountyRegionsInfo(RegionMapper map) {
             counties = new Dictionary<string, CK2CountyRegionInfo>();
             string provinceHistoryPath = ImportantPaths.conversionInfoPath() + "\\region\\provinceHistory";
             string[] histories = Directory.GetFiles(provinceHistoryPath);
