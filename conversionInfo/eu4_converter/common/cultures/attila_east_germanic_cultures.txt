@@ -1,0 +1,23 @@
+germanic = {
+	bastarnae = {
+		dynasty_names = $bastarnae$
+	}
+	gepid = {
+		dynasty_names = $gepid$
+	}
+	greuthungi = {
+		dynasty_names = $greuthungi$
+	}
+	lugii = {
+		dynasty_names = $lugii$
+	}
+	ostrogothic = {
+		dynasty_names = $ostrogothic$
+	}
+	rugii = {
+		dynasty_names = $rugii$
+	}
+	vandalic = {
+		dynasty_names = $vandalic$
+	}
+}

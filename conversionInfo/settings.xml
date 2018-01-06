@@ -1,4 +1,6 @@
 <?xml version="1.0"?>
 <rec type="SETTINGS_FILE" version="1">
   <savegameXMLLocation>D:\Program Files (x86)\TotalWarEditors\esfxml\output\compressed_data</savegameXMLLocation>
+  <firstCharID>157600001</firstCharID>
+  <firstDynastyID>137600001</firstDynastyID>
 </rec>

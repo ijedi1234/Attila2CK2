@@ -1,0 +1,8 @@
+iranian = {
+	chorasmian = {
+		dynasty_names = $chorasmian$
+	}
+	tajik = {
+		dynasty_names = $tajik$
+	}
+}

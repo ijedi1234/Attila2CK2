@@ -1,0 +1,8 @@
+west_slavic = {
+	venedian = {
+		dynasty_names = $venedian$
+	}
+	antean = {
+		dynasty_names = $antean$
+	}
+}

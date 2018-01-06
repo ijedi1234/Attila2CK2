@@ -1,0 +1,8 @@
+african = {
+	gaetuli = {
+		dynasty_names = $gaetuli$
+	}
+	garamantian = {
+		dynasty_names = $garamantian$
+	}
+}

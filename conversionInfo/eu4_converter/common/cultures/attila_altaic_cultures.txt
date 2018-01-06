@@ -1,0 +1,20 @@
+altaic = {
+	budinian = {
+		dynasty_names = $budinian$
+	}
+	sabir = {
+		dynasty_names = $sabir$
+	}
+	hephthalite = {
+		dynasty_names = $hephthalite$
+	}
+	iazyx = {
+		dynasty_names = $iazyx$
+	}
+	hunnic = {
+		dynasty_names = $hunnic$
+	}
+	roxolanian = {
+		dynasty_names = $roxolanian$
+	}
+}

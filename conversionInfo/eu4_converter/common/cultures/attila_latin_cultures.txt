@@ -1,0 +1,5 @@
+latin = {
+	latin = {
+		dynasty_names = $latin$
+	}
+}

@@ -1,0 +1,5 @@
+byzantine = {
+	anatolian = {
+		dynasty_names = $anatolian$
+	}
+}

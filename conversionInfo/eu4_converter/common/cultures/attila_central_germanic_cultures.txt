@@ -1,0 +1,14 @@
+germanic = {
+	thuringian = {
+		dynasty_names = $thuringian$
+	}
+	quadi = {
+		dynasty_names = $quadi$
+	}
+	marcoman = {
+		dynasty_names = $marcoman$
+	}
+	varinian = {
+		dynasty_names = $varinian$
+	}
+}

@@ -1,0 +1,5 @@
+israelite = {
+	yemenite = {
+		dynasty_names = $yemenite$
+	}
+}

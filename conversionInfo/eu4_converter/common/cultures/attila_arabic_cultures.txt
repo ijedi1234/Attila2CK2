@@ -1,0 +1,8 @@
+turko_semitic = {
+	nabatean = {
+		dynasty_names = $nabatean_arabic$
+	}
+	palestinian = {
+		dynasty_names = $palestinian_arabic$
+	}
+}

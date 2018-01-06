@@ -1,0 +1,11 @@
+germanic = {
+	alamanni = {
+		dynasty_names = $alamanni$
+	}
+	angli = {
+		dynasty_names = $angli$
+	}
+	jutish = {
+		dynasty_names = $jutish$
+	}
+}

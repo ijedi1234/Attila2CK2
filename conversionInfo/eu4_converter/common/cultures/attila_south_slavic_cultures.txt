@@ -1,0 +1,5 @@
+south_slavic = {
+	sclavenian = {
+		dynasty_names = $sclavenian$
+	}
+}
